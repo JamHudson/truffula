@@ -46,6 +46,13 @@ class ColorPrinterTest {
     assertEquals(expectedOutput, outputStream.toString());
   }
 
+  /* testPrintWithNoColor
+   * printer.print("I speak for the trees");
+   * expects ???
+   * ?? ConsoleColor.WHITE + "I speak for the trees" + ConsoleColor.RESET
+   * ?? ConsoleColor.RESET + "I speak for the trees" + ConsoleColor.RESET
+   */
+
   // I can't write more tests without knowing how this is supposed to work.
 
 }
