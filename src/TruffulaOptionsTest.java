@@ -1,3 +1,4 @@
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -27,18 +28,14 @@ public class TruffulaOptionsTest {
     assertFalse(options.isUseColor());
   }
 
-  @Test
+  @Test 
   void testUnknownFlag(@TempDir File tempDir) throws FileNotFoundException {
     File directory = new File(tempDir, "subfolder");
     directory.mkdir();
     String directoryPath = directory.getAbsolutePath();
     String[] args = {"-amongus", directoryPath};
 
-    TruffulaOptions options = new TruffulaOptions(args);
-
-    assertEquals(directoryPath, options.getRoot().getAbsolutePath());
-    assertFalse(options.isShowHidden());
-    assertTrue(options.isUseColor());
+    assertThrows(IllegalArgumentException.class, ()->new TruffulaOptions(args));
   }
 
   @Test
