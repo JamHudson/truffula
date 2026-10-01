@@ -86,14 +86,8 @@ public class ColorPrinter {
    * @param reset   if true, resets the color after printing; if false, keeps the current color
    */
   public void print(String message, boolean reset) {
-    // TODO: Implement this!
     String suffix = reset ? ConsoleColor.RESET.toString() : "";
     printStream.print(currentColor + message + suffix);
-    /* Does reset alter the next print?
-     * Is the default color the reset color or the provided color at the constructor?
-     * Should the color be redeclared every time a new print is called? If so, why does it ever need to reset?
-     * currentColor = reset ? ConsoleColor.RESET : currentColor;
-     */
   }
 
   /**
