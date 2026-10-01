@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -29,13 +30,29 @@ public class TruffulaOptionsTest {
   }
 
   @Test 
-  void testUnknownFlag(@TempDir File tempDir) throws FileNotFoundException {
+  void testUnknownFlagError(@TempDir File tempDir) throws FileNotFoundException {
     File directory = new File(tempDir, "subfolder");
     directory.mkdir();
     String directoryPath = directory.getAbsolutePath();
     String[] args = {"-amongus", directoryPath};
 
-    assertThrows(IllegalArgumentException.class, ()->new TruffulaOptions(args));
+    String expected = "Unknown flags: [-amongus]";
+
+    Exception e = assertThrows(IllegalArgumentException.class, ()->new TruffulaOptions(args));
+    assertEquals(expected, e.getMessage());
+  }
+
+  @Test
+  void testTooManyFlagsError(@TempDir File tempDir) throws FileNotFoundException {
+    File directory = new File(tempDir, "subfolder");
+    directory.mkdir();
+    String directoryPath = directory.getAbsolutePath();
+    String[] args = {"-h", "-nc", "-amongus", directoryPath};
+
+    String expected = "Unknown flags: [-amongus]";
+
+    Exception e = assertThrows(IllegalArgumentException.class, ()->new TruffulaOptions(args));
+    assertEquals(expected, e.getMessage());
   }
 
   @Test
@@ -73,5 +90,48 @@ public class TruffulaOptionsTest {
 
     assertFalse(options.isShowHidden());
     assertTrue(options.isUseColor());
+  }
+
+  @Test 
+  void testNoArgumentsError() {
+    String[] args = { };
+
+    Exception e = assertThrows(IllegalArgumentException.class, ()->new TruffulaOptions(args));
+    assertEquals("No path provided", e.getMessage());
+  }
+
+  @Test
+  void testFileDoesNotExistError() {
+    String invalidPath = "invalidpathname";
+    String[] args = { invalidPath };
+
+    String expected = "Could not find file from path: " + invalidPath + System.lineSeparator()
+        + "Ensure path is final argument";
+
+    Exception e =assertThrows(FileNotFoundException.class, () -> new TruffulaOptions(args));
+    assertEquals(expected, e.getMessage());
+  }
+
+  @Test
+  void testPathNotLastArgumentError(@TempDir File tempDir) {
+    File directory = new File(tempDir, "subfolder");
+    directory.mkdir();
+    String directoryPath = directory.getAbsolutePath();
+    String[] args = { directoryPath, "-h" };
+
+    String expected = "Could not find file from path: " + "-h" + System.lineSeparator() + "Ensure path is final argument";
+
+    Exception e = assertThrows(FileNotFoundException.class, () -> new TruffulaOptions(args));
+    assertEquals(expected, e.getMessage());
+  }
+
+  @Test
+  void testFileIsNotADirectoryError(@TempDir File tempDir) throws IOException {
+    File invalidFile = new File(tempDir,"invalid.txt");
+    invalidFile.createNewFile();
+    String[] args = { invalidFile.getAbsolutePath() };
+
+    Exception e = assertThrows(FileNotFoundException.class, () -> new TruffulaOptions(args));
+    assertEquals("File is not a directory", e.getMessage());
   }
 }
