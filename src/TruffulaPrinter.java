@@ -127,16 +127,25 @@ public class TruffulaPrinter {
   }
   
   private void printFile(File root, ColorPrinter out, int depth) {
+    if (root.isHidden()) return;
     boolean isDirectory = root.isDirectory();
-    int colorIndex = (depth % 3 == 0) ? 2 :
-                     (depth % 2 == 0) ? 1 : 0;
-    out.setCurrentColor(colorSequence.get(colorIndex));
-    String printString = "   ".repeat(depth) + root.getName() + ((isDirectory ? "/" : ""));
+    out.setCurrentColor(getColor(depth));
+    String printString = "   ".repeat(depth-1) + root.getName() + ((isDirectory ? "/" : ""));
     out.println(printString);
     if (root.isDirectory()) {
       for (File child : root.listFiles()) {
         printFile(child, out, depth + 1);
       }
     }
+  }
+
+  // TODO: Fix this method
+  private ConsoleColor getColor(int depth) {
+    if (options.isUseColor()) {
+      for (int i=colorSequence.size(); i>0; i--) {
+        if (depth % i == 0) return colorSequence.get(i-1);
+      }
+    }
+    return ConsoleColor.RESET;
   }
 }
