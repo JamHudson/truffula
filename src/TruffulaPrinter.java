@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -120,7 +121,9 @@ public class TruffulaPrinter {
     String printString = "   ".repeat(depth) + root.getName() + ((isDirectory ? "/" : ""));
     out.println(printString);
     if (root.isDirectory()) {
-      for (File child : root.listFiles()) {
+      File[] files = root.listFiles();
+      if (files == null) return;
+      for (File child : files) {
         printFile(child, out, depth + 1);
       }
     }
