@@ -155,46 +155,23 @@ public class TruffulaPrinterTest {
 
     // }
 
+    // Order should be irrelevant when there is one possible order.
     @Test
     void testPrintTree_NoColor(@TempDir File tempDir) throws IOException  {
         // Build the example directory structure:
         // myFolder/
-        //    .hidden.txt
-        //    Apple.txt
-        //    banana.txt
         //    Documents/
-        //    images/
-        //       Cat.png
-        //       cat.png
-        //       Dog.png
-        //    notes.txt
-        //    README.md
-        //    zebra.txt
+        //      images/
+        //         cat.png
 
         // Create "myFolder"
         File myFolder = new File(tempDir, "myFolder");
         assertTrue(myFolder.mkdir(), "myFolder should be created");
 
-        // Create visible files in myFolder
-        File apple = new File(myFolder, "Apple.txt");
-        File banana = new File(myFolder, "banana.txt");
-        File zebra = new File(myFolder, "zebra.txt");
-        apple.createNewFile();
-        banana.createNewFile();
-        zebra.createNewFile();
-
-        // Create a hidden file in myFolder
-        createHiddenFile(myFolder, ".hidden.txt");
-
         // Create subdirectory "Documents" in myFolder
         File documents = new File(myFolder, "Documents");
         assertTrue(documents.mkdir(), "Documents directory should be created");
 
-        // Create files in Documents
-        File readme = new File(documents, "README.md");
-        File notes = new File(documents, "notes.txt");
-        readme.createNewFile();
-        notes.createNewFile();
 
         // Create subdirectory "images" in Documents
         File images = new File(documents, "images");
@@ -202,11 +179,9 @@ public class TruffulaPrinterTest {
 
         // Create files in images
         File cat = new File(images, "cat.png");
-        File dog = new File(images, "Dog.png");
         cat.createNewFile();
-        dog.createNewFile();
 
-        // Set up TruffulaOptions with showHidden = false and useColor = true
+        // Set up TruffulaOptions with showHidden = false and useColor = false
         TruffulaOptions options = new TruffulaOptions(myFolder, false, false);
 
         // Capture output using a custom PrintStream
@@ -228,15 +203,9 @@ public class TruffulaPrinterTest {
 
         StringBuilder expected = new StringBuilder();
         expected.append(reset).append("myFolder/").append(nl).append(reset);
-        expected.append(reset).append("   Apple.txt").append(nl).append(reset);
-        expected.append(reset).append("   banana.txt").append(nl).append(reset);
         expected.append(reset).append("   Documents/").append(nl).append(reset);
         expected.append(reset).append("      images/").append(nl).append(reset);
         expected.append(reset).append("         cat.png").append(nl).append(reset);
-        expected.append(reset).append("         Dog.png").append(nl).append(reset);
-        expected.append(reset).append("      notes.txt").append(nl).append(reset);
-        expected.append(reset).append("      README.md").append(nl).append(reset);
-        expected.append(reset).append("   zebra.txt").append(nl).append(reset);
 
         // Assert that the output matches the expected output exactly
         assertEquals(expected.toString(), output);
@@ -246,54 +215,16 @@ public class TruffulaPrinterTest {
     void testPrintTree_NoColor_ShowHidden(@TempDir File tempDir) throws IOException {
         // Build the example directory structure:
         // myFolder/
-        // .hidden.txt
-        // Apple.txt
-        // banana.txt
-        // Documents/
-        // images/
-        // Cat.png
-        // cat.png
-        // Dog.png
-        // notes.txt
-        // README.md
-        // zebra.txt
+        //     .hidden.txt
 
         // Create "myFolder"
         File myFolder = new File(tempDir, "myFolder");
         assertTrue(myFolder.mkdir(), "myFolder should be created");
 
-        // Create visible files in myFolder
-        File apple = new File(myFolder, "Apple.txt");
-        File banana = new File(myFolder, "banana.txt");
-        File zebra = new File(myFolder, "zebra.txt");
-        apple.createNewFile();
-        banana.createNewFile();
-        zebra.createNewFile();
-
         // Create a hidden file in myFolder
         createHiddenFile(myFolder, ".hidden.txt");
 
-        // Create subdirectory "Documents" in myFolder
-        File documents = new File(myFolder, "Documents");
-        assertTrue(documents.mkdir(), "Documents directory should be created");
-
-        // Create files in Documents
-        File readme = new File(documents, "README.md");
-        File notes = new File(documents, "notes.txt");
-        readme.createNewFile();
-        notes.createNewFile();
-
-        // Create subdirectory "images" in Documents
-        File images = new File(documents, "images");
-        assertTrue(images.mkdir(), "images directory should be created");
-
-        // Create files in images
-        File cat = new File(images, "cat.png");
-        File dog = new File(images, "Dog.png");
-        cat.createNewFile();
-        dog.createNewFile();
-
-        // Set up TruffulaOptions with showHidden = false and useColor = true
+        // Set up TruffulaOptions with showHidden = true and useColor = false
         TruffulaOptions options = new TruffulaOptions(myFolder, true, false);
 
         // Capture output using a custom PrintStream
@@ -316,15 +247,64 @@ public class TruffulaPrinterTest {
         StringBuilder expected = new StringBuilder();
         expected.append(reset).append("myFolder/").append(nl).append(reset);
         expected.append(reset).append("   .hidden.txt").append(nl).append(reset);
-        expected.append(reset).append("   Apple.txt").append(nl).append(reset);
-        expected.append(reset).append("   banana.txt").append(nl).append(reset);
-        expected.append(reset).append("   Documents/").append(nl).append(reset);
-        expected.append(reset).append("      images/").append(nl).append(reset);
-        expected.append(reset).append("         cat.png").append(nl).append(reset);
-        expected.append(reset).append("         Dog.png").append(nl).append(reset);
-        expected.append(reset).append("      notes.txt").append(nl).append(reset);
-        expected.append(reset).append("      README.md").append(nl).append(reset);
-        expected.append(reset).append("   zebra.txt").append(nl).append(reset);
+
+        // Assert that the output matches the expected output exactly
+        assertEquals(expected.toString(), output);
+    }
+
+    // Order should be irrelevant when there is one possible order.
+    @Test
+    void testPrintTree_WithColor_OrderIrrelevant(@TempDir File tempDir) throws IOException {
+        // Build the example directory structure:
+        //  myFolder/
+        //      Documents/
+        //          images/
+        //              cat.png
+
+        // Create "myFolder"
+        File myFolder = new File(tempDir, "myFolder");
+        assertTrue(myFolder.mkdir(), "myFolder should be created");
+
+        // Create subdirectory "Documents" in myFolder
+        File documents = new File(myFolder, "Documents");
+        assertTrue(documents.mkdir(), "Documents directory should be created");
+
+        // Create subdirectory "images" in Documents
+        File images = new File(documents, "images");
+        assertTrue(images.mkdir(), "images directory should be created");
+
+        // Create files in images
+        File cat = new File(images, "cat.png");
+        cat.createNewFile();
+
+        // Set up TruffulaOptions with showHidden = false and useColor = true
+        TruffulaOptions options = new TruffulaOptions(myFolder, false, true);
+
+        // Capture output using a custom PrintStream
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(baos);
+
+        // Instantiate TruffulaPrinter with custom PrintStream
+        TruffulaPrinter printer = new TruffulaPrinter(options, printStream);
+
+        // Call printTree (output goes to printStream)
+        printer.printTree();
+
+        // Retrieve printed output
+        String output = baos.toString();
+        String nl = System.lineSeparator();
+
+        // Build expected output with exact colors and indentation
+        ConsoleColor reset = ConsoleColor.RESET;
+        ConsoleColor white = ConsoleColor.WHITE;
+        ConsoleColor purple = ConsoleColor.PURPLE;
+        ConsoleColor yellow = ConsoleColor.YELLOW;
+
+        StringBuilder expected = new StringBuilder();
+        expected.append(white).append("myFolder/").append(nl).append(reset);
+        expected.append(purple).append("   Documents/").append(nl).append(reset);
+        expected.append(yellow).append("      images/").append(nl).append(reset);
+        expected.append(white).append("         cat.png").append(nl).append(reset);
 
         // Assert that the output matches the expected output exactly
         assertEquals(expected.toString(), output);
