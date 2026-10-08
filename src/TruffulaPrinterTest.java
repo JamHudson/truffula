@@ -69,7 +69,6 @@ public class TruffulaPrinterTest {
         //    banana.txt
         //    Documents/
         //       images/
-        //          Cat.png
         //          cat.png
         //          Dog.png
         //       notes.txt
