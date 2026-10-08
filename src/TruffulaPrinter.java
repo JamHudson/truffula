@@ -129,7 +129,6 @@ public class TruffulaPrinter {
   private ConsoleColor getColor(int depth) {
     if (options.isUseColor()) {
       int idx = depth % colorSequence.size()+1;
-      System.out.println(depth+" "+idx);
       return colorSequence.get(idx-1);
     }
     return ConsoleColor.RESET;
