@@ -127,7 +127,7 @@ public class TruffulaPrinter {
   }
   
   private void printFile(File root, ColorPrinter out, int depth) {
-    if (root.isHidden()) return;
+    if (root.isHidden() && !options.isShowHidden()) return;
     boolean isDirectory = root.isDirectory();
     out.setCurrentColor(getColor(depth));
     String printString = "   ".repeat(depth-1) + root.getName() + ((isDirectory ? "/" : ""));
