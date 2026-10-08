@@ -309,4 +309,80 @@ public class TruffulaPrinterTest {
         // Assert that the output matches the expected output exactly
         assertEquals(expected.toString(), output);
     }
+    
+    // Order should be irrelevant when there is one possible order.
+    @Test
+    void testPrintTree_WithColor_OrderIrrelevant_LongTree(@TempDir File tempDir) throws IOException {
+        // Build the example directory structure:
+        // myFolder/
+        //    Documents/
+        //      images/
+        //          cool_images/
+        //              super_cool_images/
+        //                  super_duper_cool_images/
+        //                      cat.png
+
+        // Create "myFolder"
+        File myFolder = new File(tempDir, "myFolder");
+        assertTrue(myFolder.mkdir(), "myFolder should be created");
+
+        // Create subdirectory "Documents" in myFolder
+        File documents = new File(myFolder, "Documents");
+        assertTrue(documents.mkdir(), "Documents directory should be created");
+
+        // Create subdirectory "images" in Documents
+        File images = new File(documents, "images");
+        assertTrue(images.mkdir(), "images directory should be created");
+
+        // Create subdirectory "cool_images" in images
+        File cool_images = new File(images, "cool_images");
+        assertTrue(cool_images.mkdir(), "cool_images directory should be created");
+
+        // Create subdirectory "super_cool_images" in cool_images
+        File super_cool_images = new File(cool_images, "super_cool_images");
+        assertTrue(super_cool_images.mkdir(), "super_cool_images directory should be created");
+
+        // Create subdirectory "super_duper_cool_images" in super_cool_images
+        File super_duper_cool_images = new File(super_cool_images, "super_duper_cool_images");
+        assertTrue(super_duper_cool_images.mkdir(), "super_duper_cool_images directory should be created");
+
+        // Create files in super_duper_cool_images
+        File cat = new File(super_duper_cool_images, "cat.png");
+        cat.createNewFile();
+
+        // Set up TruffulaOptions with showHidden = false and useColor = true
+        TruffulaOptions options = new TruffulaOptions(myFolder, false, true);
+
+        // Capture output using a custom PrintStream
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(baos);
+
+        // Instantiate TruffulaPrinter with custom PrintStream
+        TruffulaPrinter printer = new TruffulaPrinter(options, printStream);
+
+        // Call printTree (output goes to printStream)
+        printer.printTree();
+
+        // Retrieve printed output
+        String output = baos.toString();
+        String nl = System.lineSeparator();
+
+        // Build expected output with exact colors and indentation
+        ConsoleColor reset = ConsoleColor.RESET;
+        ConsoleColor white = ConsoleColor.WHITE;
+        ConsoleColor purple = ConsoleColor.PURPLE;
+        ConsoleColor yellow = ConsoleColor.YELLOW;
+
+        StringBuilder expected = new StringBuilder();
+        expected.append(white).append("myFolder/").append(nl).append(reset);
+        expected.append(purple).append("   Documents/").append(nl).append(reset);
+        expected.append(yellow).append("      images/").append(nl).append(reset);
+        expected.append(white).append("         cool_images/").append(nl).append(reset);
+        expected.append(purple).append("            super_cool_images/").append(nl).append(reset);
+        expected.append(yellow).append("               super_duper_cool_images/").append(nl).append(reset);
+        expected.append(white).append("                  cat.png").append(nl).append(reset);
+
+        // Assert that the output matches the expected output exactly
+        assertEquals(expected.toString(), output);
+    }
 }
